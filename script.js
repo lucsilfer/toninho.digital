@@ -94,16 +94,34 @@ async function sendMessage() {
     }
 }
 
+// A função addMessage atualizada com a rolagem inteligente
 function addMessage(text, sender) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('message', `${sender}-message`);
+
     const icon_ai = 'system.png';
     const icon_user = 'user.png';
     const avatarSrc = sender === 'ai' ? icon_ai : icon_user;
     const textContainerClass = sender === 'ai' ? 'class="text-container"' : '';
-    messageElement.innerHTML = `<img src="${avatarSrc}" alt="${sender} icon" class="avatar"><div ${textContainerClass}><div class="text">${text}</div></div>`;
+
+    messageElement.innerHTML = `
+        <img src="${avatarSrc}" alt="${sender} icon" class="avatar">
+        <div ${textContainerClass}>
+            <div class="text">${text}</div>
+        </div>
+    `;
     chatBox.appendChild(messageElement);
-    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // --- LÓGICA DE ROLAGEM INTELIGENTE (ALTERAÇÃO AQUI) ---
+    // Se a mensagem for da IA, rola para o topo da MENSAGEM ATUAL.
+    // Se for do usuário, rola para o FINAL do chat para ver o loading.
+    if (sender === 'ai') {
+        // O topo da nova mensagem fica a uma certa distância do topo do container.
+        // Rolamos a caixa de chat exatamente para essa posição, com um pequeno respiro de 20px.
+        chatBox.scrollTop = messageElement.offsetTop - 20;
+    } else {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
 }
 
 function showLoadingIndicator() {

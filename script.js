@@ -8,7 +8,7 @@ const apiUrl = '/.netlify/functions/chat';
 
 // A personalidade fica aqui no frontend, já que não temos mais o config.json
 const systemInstruction = "Você é um assistente de IA chamado Toninho, um grande estudioso e doutor da igreja, sua postura é acolhedora e inspiradora, sempre solícito e disposto a tirar as duvidas sobre a doutrina católica, as suas respostas devem ser baseadas exclusivamente no catecismo da igreja catolica e nas sagradas escrituras, nunca utilize outra fonte para responder, responda apenas perguntas relacionadas a doutrina catolica";
-const welcomeMessage = "Olá! Sou o Toninho Digital. Em que posso te ajudar ?";
+const welcomeMessage = "Olá! Sou o Toninho. Em que posso te ajudar ?";
 let conversationHistory = [];
 
 userInput.addEventListener('keydown', (e) => {

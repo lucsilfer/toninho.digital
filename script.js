@@ -4,29 +4,41 @@ const sendBtn = document.getElementById('send-btn');
 const newChatBtn = document.getElementById('new-chat-btn');
 
 // Aponta para a nossa função segura na Netlify
-const apiUrl = '/.netlify/functions/chat'; 
+const apiUrl = '/.netlify/functions/chat';
 
+// A personalidade do assistente está definida aqui
 const systemInstruction = "Você é o 'Toninho Digital', um assistente católico com a personalidade de um jovem estudioso, amigável e inspirador. Sua missão é tirar dúvidas sobre a doutrina católica, usando uma linguagem lúdica e clara, ideal para jovens. Suas fontes são EXCLUSIVAMENTE o Catecismo da Igreja Católica e as Sagradas Escrituras. Sempre cite as referências (ex: João 3:16 ou CIC 2558). Use emojis de forma moderada para tornar a conversa mais divertida. 😊 REGRA MAIS IMPORTANTE: Para estimular a curiosidade, sempre finalize suas respostas em duas partes: 1. Responda à pergunta original. 2. Ao final, adicione uma 'Curiosidade ✨' com um fato interessante relacionado ao tema e, em seguida, faça uma pergunta convidativa para que o usuário queira saber mais. Exemplo: 'Você sabia que São Longuinho era o soldado que perfurou o lado de Jesus? Se quiser, posso te contar a história completa dele!'";
 const welcomeMessage = "Olá! Sou o Toninho. Em que posso te ajudar ?";
 let conversationHistory = [];
 
 // --- EVENT LISTENERS ---
+
+// Listener para a tecla Enter
 userInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
+        e.preventDefault(); // Impede a quebra de linha
         sendMessage();
-        userInput.style.height = 'auto';
+        userInput.style.height = 'auto'; // Reseta a altura do campo após enviar
     }
 });
+
+// Listener para o botão de enviar
 sendBtn.addEventListener('click', () => {
     sendMessage();
-    userInput.style.height = 'auto';
+    userInput.style.height = 'auto'; // Reseta a altura do campo após enviar
 });
+
+// Listener para o botão de nova conversa
 newChatBtn.addEventListener('click', resetChat);
+
+// Listener para o autoajuste de altura do campo de texto
 userInput.addEventListener('input', () => {
+    // Reseta a altura para recalcular e permitir que o campo encolha
     userInput.style.height = 'auto';
+    // Define a nova altura com base no conteúdo
     userInput.style.height = `${userInput.scrollHeight}px`;
 });
+
 
 // --- FUNÇÕES ---
 
@@ -42,7 +54,7 @@ function resetChat() {
 async function sendMessage() {
     const messageText = userInput.value.trim();
     if (messageText === '') return;
-    
+
     addMessage(messageText, 'user');
     conversationHistory.push({ role: 'user', content: messageText });
 
@@ -56,7 +68,7 @@ async function sendMessage() {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                messages: conversationHistory 
+                messages: conversationHistory
             })
         });
 
@@ -66,15 +78,19 @@ async function sendMessage() {
 
         const data = await response.json();
         removeLoadingIndicator();
-        
+
         if (data.error) {
             throw new Error(data.error.message);
         }
 
-        const aiResponse = data.choices[0].message.content;
-        
-        addMessage(aiResponse, 'ai');
-        conversationHistory.push({ role: 'assistant', content: aiResponse });
+        const aiResponse = data.choices?.[0]?.message?.content;
+
+        if (aiResponse) {
+            addMessage(aiResponse, 'ai');
+            conversationHistory.push({ role: 'assistant', content: aiResponse });
+        } else {
+            addMessage('A resposta da IA não pôde ser processada.', 'ai');
+        }
 
     } catch (error) {
         console.error('Erro ao chamar a API:', error);
@@ -86,21 +102,35 @@ async function sendMessage() {
 function addMessage(text, sender) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('message', `${sender}-message`);
+
     const icon_ai = 'system.png';
     const icon_user = 'user.png';
     const avatarSrc = sender === 'ai' ? icon_ai : icon_user;
     const textContainerClass = sender === 'ai' ? 'class="text-container"' : '';
-    messageElement.innerHTML = `<img src="${avatarSrc}" alt="${sender} icon" class="avatar"><div ${textContainerClass}><div class="text">${text}</div></div>`;
+
+    messageElement.innerHTML = `
+        <img src="${avatarSrc}" alt="${sender} icon" class="avatar">
+        <div ${textContainerClass}>
+            <div class="text">${text}</div>
+        </div>
+    `;
     chatBox.appendChild(messageElement);
 
-    // --- LÓGICA DE ROLAGEM ALTERNATIVA (scrollIntoView) ---
-    if (sender === 'ai') {
-        // Rola a tela para que o TOPO da mensagem da IA fique visível
-        messageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-        // Rola a tela para que o FINAL da mensagem do usuário fique visível
-        messageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
-    }
+    // --- LÓGICA DE ROLAGEM AJUSTADA PARA MANTER A PERGUNTA NO TOPO ---
+    setTimeout(() => {
+        if (sender === 'ai') {
+            // Encontra a última mensagem do usuário
+            const lastUserMessage = chatBox.querySelector('.user-message:last-child');
+            if (lastUserMessage) {
+                lastUserMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            } else {
+                // Se não houver mensagem do usuário, rola para o início da resposta da IA
+                messageElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        } else {
+            messageElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+    }, 0);
 }
 
 function showLoadingIndicator() {
@@ -110,10 +140,9 @@ function showLoadingIndicator() {
     const icon_ai = 'system.png';
     loadingElement.innerHTML = `<img src="${icon_ai}" alt="ai icon" class="avatar"><div class="text-container"><div class="loading-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
     chatBox.appendChild(loadingElement);
-
-    // --- LÓGICA DE ROLAGEM ALTERNATIVA (scrollIntoView) ---
-    // Rola para que o indicador de "carregando" fique visível no final da tela
-    loadingElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    setTimeout(() => {
+        loadingElement.scrollIntoView({ behavior: 'smooth', block: 'end' });
+    }, 0);
 }
 
 function removeLoadingIndicator() {

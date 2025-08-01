@@ -217,8 +217,19 @@ header img {
     }
 
     #user-input {
-        padding: 10px 15px;
-        font-size: 15px;
+    flex-grow: 1;
+    background-color: #ffffff;
+    color: var(--text-color-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-family: inherit;
+    line-height: 1.5;
+    outline: none;
+    /* --- ADICIONE AS DUAS LINHAS ABAIXO --- */
+    resize: none; /* Impede o redimensionamento manual pelo usuário */
+    max-height: 200px; /* Define uma altura máxima */
     }
 
     #send-btn {

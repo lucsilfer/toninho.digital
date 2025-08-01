@@ -6,19 +6,41 @@ const newChatBtn = document.getElementById('new-chat-btn');
 // Aponta para a nossa função segura na Netlify
 const apiUrl = '/.netlify/functions/chat'; 
 
-// A personalidade fica aqui no frontend, já que não temos mais o config.json
+// A personalidade do assistente está definida aqui
 const systemInstruction = "Você é um assistente de IA chamado Toninho, um grande estudioso e doutor da igreja, sua postura é acolhedora e inspiradora, sempre solícito e disposto a tirar as duvidas sobre a doutrina católica, as suas respostas devem ser baseadas exclusivamente no catecismo da igreja catolica e nas sagradas escrituras, nunca utilize outra fonte para responder, responda apenas perguntas relacionadas a doutrina catolica";
-const welcomeMessage = "Olá! Sou o Toninho. Em que posso te ajudar ?";
+const welcomeMessage = "Olá! Sou o Toninho Digital. Em que posso te ajudar com base na fé e na sã doutrina?";
 let conversationHistory = [];
 
+// --- EVENT LISTENERS ---
+
+// Listener para a tecla Enter
 userInput.addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
+        e.preventDefault(); // Impede a quebra de linha
         sendMessage();
+        userInput.style.height = 'auto'; // Reseta a altura do campo após enviar
     }
 });
-sendBtn.addEventListener('click', sendMessage);
+
+// Listener para o botão de enviar
+sendBtn.addEventListener('click', () => {
+    sendMessage();
+    userInput.style.height = 'auto'; // Reseta a altura do campo após enviar
+});
+
+// Listener para o botão de nova conversa
 newChatBtn.addEventListener('click', resetChat);
+
+// Listener para o autoajuste de altura do campo de texto
+userInput.addEventListener('input', () => {
+    // Reseta a altura para recalcular e permitir que o campo encolha
+    userInput.style.height = 'auto';
+    // Define a nova altura com base no conteúdo
+    userInput.style.height = `${userInput.scrollHeight}px`;
+});
+
+
+// --- FUNÇÕES ---
 
 function resetChat() {
     chatBox.innerHTML = '';
@@ -84,6 +106,7 @@ function addMessage(text, sender) {
     chatBox.appendChild(messageElement);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
+
 function showLoadingIndicator() {
     const loadingElement = document.createElement('div');
     loadingElement.id = 'loading';
@@ -93,9 +116,11 @@ function showLoadingIndicator() {
     chatBox.appendChild(loadingElement);
     chatBox.scrollTop = chatBox.scrollHeight;
 }
+
 function removeLoadingIndicator() {
     const loadingElement = document.getElementById('loading');
     if (loadingElement) { loadingElement.remove(); }
 }
 
+// Inicia o chat quando a página carrega
 resetChat();

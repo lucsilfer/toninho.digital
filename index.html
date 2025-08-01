@@ -5,11 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Toninho Digital</title>
     <link rel="stylesheet" href="style.css">
+
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N5F06LXXJD"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-N5F06LXXJD');
+    </script>
     <script src="script.js" defer></script>
 </head>
 <body>
+
     <header>
-        <img src="toninho_digital_logo.png" alt="Logo Toninho Digital"> <button id="new-chat-btn" title="Nova Conversa">
+        <img src="toninho_digital_logo.png" alt="Logo Toninho Digital">
+        
+        <button id="new-chat-btn" title="Nova Conversa">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <line x1="12" y1="5" x2="12" y2="19"></line>
                 <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -17,8 +29,11 @@
             <span>Nova Conversa</span>
         </button>
     </header>
+
     <div class="chat-container">
-        <div id="chat-box"></div>
+        <div id="chat-box">
+            </div>
+
         <div class="input-area">
             <textarea id="user-input" placeholder="Digite sua pergunta aqui..." rows="1"></textarea>
             <button id="send-btn">
@@ -29,5 +44,6 @@
             </button>
         </div>
     </div>
+
 </body>
 </html>

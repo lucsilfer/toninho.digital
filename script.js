@@ -7,7 +7,8 @@ const newChatBtn = document.getElementById('new-chat-btn');
 const apiUrl = '/.netlify/functions/chat'; 
 
 // A personalidade do assistente está definida aqui
-const systemInstruction = "Você é o 'Toninho Digital', um assistente católico com a personalidade de um jovem estudioso, amigável e inspirador. Sua missão é tirar dúvidas sobre a doutrina católica, usando uma linguagem lúdica e clara, ideal para jovens. Suas fontes são EXCLUSIVAMENTE o Catecismo da Igreja Católica e as Sagradas Escrituras. Sempre cite as referências (ex: João 3:16 ou CIC 2558). Use emojis de forma moderada para tornar a conversa mais divertida. 😊 REGRA MAIS IMPORTANTE: Para estimular a curiosidade, sempre finalize suas respostas em duas partes: 1. Responda à pergunta original. 2. Ao final, adicione uma 'Curiosidade ✨' com um fato interessante relacionado ao tema e, em seguida, faça uma pergunta convidativa para que o usuário queira saber mais. Exemplo: 'Você sabia que São Longuinho era o soldado que perfurou o lado de Jesus? Se quiser, posso te contar a história completa dele!'";const welcomeMessage = "Olá! Sou o Toninho. Em que posso te ajudar ?";
+const systemInstruction = "Você é o 'Toninho Digital', um assistente católico com a personalidade de um jovem estudioso, amigável e inspirador. Sua missão é tirar dúvidas sobre a doutrina católica, usando uma linguagem lúdica e clara, ideal para jovens. Suas fontes são EXCLUSIVAMENTE o Catecismo da Igreja Católica e as Sagradas Escrituras. Sempre cite as referências (ex: João 3:16 ou CIC 2558). Use emojis de forma moderada para tornar a conversa mais divertida. 😊 REGRA MAIS IMPORTANTE: Para estimular a curiosidade, sempre finalize suas respostas em duas partes: 1. Responda à pergunta original. 2. Ao final, adicione uma 'Curiosidade ✨' com um fato interessante relacionado ao tema e, em seguida, faça uma pergunta convidativa para que o usuário queira saber mais. Exemplo: 'Você sabia que São Longuinho era o soldado que perfurou o lado de Jesus? Se quiser, posso te contar a história completa dele!'";
+const welcomeMessage = "Olá! Sou o Toninho. Em que posso te ajudar ?";
 let conversationHistory = [];
 
 // --- EVENT LISTENERS ---
@@ -94,7 +95,6 @@ async function sendMessage() {
     }
 }
 
-// A função addMessage atualizada com a rolagem inteligente
 function addMessage(text, sender) {
     const messageElement = document.createElement('div');
     messageElement.classList.add('message', `${sender}-message`);
@@ -112,16 +112,14 @@ function addMessage(text, sender) {
     `;
     chatBox.appendChild(messageElement);
 
-    // --- LÓGICA DE ROLAGEM INTELIGENTE (ALTERAÇÃO AQUI) ---
-    // Se a mensagem for da IA, rola para o topo da MENSAGEM ATUAL.
-    // Se for do usuário, rola para o FINAL do chat para ver o loading.
-    if (sender === 'ai') {
-        // O topo da nova mensagem fica a uma certa distância do topo do container.
-        // Rolamos a caixa de chat exatamente para essa posição, com um pequeno respiro de 20px.
-        chatBox.scrollTop = messageElement.offsetTop - 20;
-    } else {
-        chatBox.scrollTop = chatBox.scrollHeight;
-    }
+    // --- CORREÇÃO DE ROLAGEM APLICADA AQUI ---
+    setTimeout(() => {
+        if (sender === 'ai') {
+            chatBox.scrollTop = messageElement.offsetTop - 20;
+        } else {
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    }, 0);
 }
 
 function showLoadingIndicator() {
@@ -131,7 +129,11 @@ function showLoadingIndicator() {
     const icon_ai = 'system.png';
     loadingElement.innerHTML = `<img src="${icon_ai}" alt="ai icon" class="avatar"><div class="text-container"><div class="loading-indicator"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
     chatBox.appendChild(loadingElement);
-    chatBox.scrollTop = chatBox.scrollHeight;
+
+    // --- CORREÇÃO DE ROLAGEM APLICADA AQUI ---
+    setTimeout(() => {
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }, 0);
 }
 
 function removeLoadingIndicator() {

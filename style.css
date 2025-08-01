@@ -176,7 +176,7 @@ header img {
 /* --- REGRAS PARA RESPONSIVIDADE (TELAS MENORES QUE 768px) --- */
 @media (max-width: 768px) {
     body {
-        font-size: 15px;
+        font-size: 16px;
         /* ALTERADO: Define o background específico para celular */
         background-image: url('fundo_mobile.png'); 
     }
